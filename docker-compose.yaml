@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  postgres:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./env/postgres.env
+  server:
+    # image
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./env/server.env
+    volumes:
+      - /server/node_modules
+      - .:/server
+    depends_on:
+      - postgres
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/src:/client/src
+    stdin_open: true
+    tty: true
+    depends_on:
+      - server
